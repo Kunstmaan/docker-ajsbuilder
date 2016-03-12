@@ -1,4 +1,4 @@
-FROM node:4
+FROM alpine:latest
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -6,15 +6,15 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app/
 COPY Gemfile /usr/src/app/
 
-RUN apt-get -qq update \
-        && apt-get install -qq -y build-essential rubygems ruby-dev \
-        && gem install bundler --quiet \
-        && bundle install \
-        && npm set progress=false \
-        && npm install -g gulp bower --silent \
-        && npm install --silent \
-        && apt-get -qq -y autoremove \
-        && apt-get -qq -y clean \
-        && rm -rf /var/lib/apt/lists/*
+RUN echo 'gem: --no-rdoc --no-ri' > /etc/gemrc && \
+    apk --update add --virtual build_deps build-base python nasm ruby-dev libc-dev linux-headers openssl-dev libxml2-dev libxslt-dev && \
+    apk --update add git ruby ruby-bundler ruby-io-console nodejs ca-certificates && \
+    bundle install && \
+    npm set progress=false && \
+    npm install -g gulp && \
+    npm install && \
+    rm -f package.json Gemfile && \
+    apk del build_deps && \
+    rm -rf /var/cache/apk/*
 
 CMD [ "/bin/bash" ]
