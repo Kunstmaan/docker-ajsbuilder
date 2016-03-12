@@ -1,0 +1,8 @@
+version: '2'
+
+services:
+    masternode:
+        image: kunstmaan/ajsbuilder
+        build: .
+        stdin_open: true
+        tty: true
